@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const { verifyToken } = require('../Helpers/Token');
 
 //req : request Json{} URL ?param1=valor1
 //res : response Json{} status:200,400,500 respuesta del aplicativo
@@ -11,8 +12,7 @@ module.exports = (req, res, next) => {
         return res.status(401).json({ message: 'Access denied. No token provided.' });
     }
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = decoded.user;
+        req.user = verifyToken(token);
         next();
     } catch (error) {
             res.status(401).json({ message: 'Invalid token.' });
