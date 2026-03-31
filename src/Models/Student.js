@@ -1,5 +1,4 @@
 const mongoose = require('mongoose')
-const Subject = require('./Subject')
 
 const studentSchema = new mongoose.Schema({
     ID:{
