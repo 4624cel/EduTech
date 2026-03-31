@@ -1,6 +1,6 @@
 const Teacher = require('../Models/Teacher');
 
-exports.getAllteachers = async (req, res) => {
+exports.getAllTeachers = async (req, res) => {
     try {
         const teachers = await Teacher.find();
         res.status(200).json({message: "Teachers fetched successfully",code:200, data: teachers});
@@ -9,7 +9,7 @@ exports.getAllteachers = async (req, res) => {
     }
 };
 
-exports.getTeacherById = async (req,res) =>{
+exports.getTeacherByID = async (req,res) =>{
     try {
         const ID = req.params.ID; 
         if (!ID) {

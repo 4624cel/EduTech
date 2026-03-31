@@ -1,5 +1,5 @@
-const Student = require("../models/Student");
-const Teacher = require("../models/Teacher");
+const Student = require("../Models/Student");
+const Teacher = require("../Models/Teacher");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
@@ -17,7 +17,7 @@ exports.registrarUsuario = async (req, res) => {
   try {
     const { ID, Name, Email, Password } = req.body;
 
-    // 🔒 El role NO viene del frontend
+    //  El role NO viene del frontend
     const role = getUserType(Email);
 
     let usuario;

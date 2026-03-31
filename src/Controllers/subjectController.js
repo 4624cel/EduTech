@@ -10,7 +10,7 @@ exports.getAllSubjects = async (req, res) => {
     }
 };
 
-exports.getSubjectById = async (req,res) =>{
+exports.getSubjectByID = async (req,res) =>{
     try {
         const ID = req.params.ID; 
         if (!ID) {

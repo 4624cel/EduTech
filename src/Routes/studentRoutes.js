@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const ReportesController = require('../Controllers/studentController');
+const studentController = require("../Controllers/studentController");
 const Auth = require('../Middlewares/auth');
 
 router.get('/getAllStudents',Auth, studentController.getAllStudents);

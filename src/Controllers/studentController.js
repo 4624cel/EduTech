@@ -1,15 +1,15 @@
-const Student = require('.../Models/Student');
+const Student = require('../Models/Student');
 
-exports.getAllstudents = async (req, res) => {
+exports.getAllStudents = async (req, res) => {
     try {
-        const students = await Student.find();
+        const Students = await Student.find();
         res.status(200).json({message: "Students fetched successfully",code:200, data: students});
     } catch (error) {
         res.status(500).json({ message: 'Error fetching students', error });
     }
 };
 
-exports.getStudentById = async (req,res) =>{
+exports.getStudentByID = async (req,res) =>{
     try {
         const ID = req.params.ID; 
         if (!ID) {
