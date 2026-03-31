@@ -3,7 +3,6 @@ const mongoose = require('mongoose')
 const studentSchema = new mongoose.Schema({
     ID:{
         type: String,
-        required: true,
         unique: true
     },
     Photo:{
@@ -12,7 +11,7 @@ const studentSchema = new mongoose.Schema({
     },
     Name:{
         type: String,
-        required: true
+   
     },
     Email: {   
         type: String,

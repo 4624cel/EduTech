@@ -15,53 +15,48 @@ const getUserType = (email) => {
 // Registro
 exports.registrarUsuario = async (req, res) => {
   try {
-    const { ID, Name, Email, Password } = req.body;
-
+    const { Email, Password } = req.body;
     //  El role NO viene del frontend
     const role = getUserType(Email);
 
     let usuario;
 
     if (role === "student") {
-      usuario = await Student.findOne({ email: Email });
+      usuario = await Student.findOne({ Email: Email });
       if (usuario)
-        return res.status(400).json({ msg: "El estudiante ya existe" });
+        return res.status(400).json({ msg: "The student already exists" });
 
       usuario = new Student({
-        id: ID,
-        name: Name,
-        email: Email,
-        password: Password,
-        role: role, // guardado en DB
+        Email: Email,
+        Password: Password,
+        Role: role, // guardado en DB
       });
 
     } else {
-      usuario = await Teacher.findOne({ email: Email });
+      usuario = await Teacher.findOne({ Email: Email });
       if (usuario)
-        return res.status(400).json({ msg: "El profesor ya existe" });
+        return res.status(400).json({ msg: "The professor already exists" });
 
       usuario = new Teacher({
-        id: ID,
-        name: Name,
-        email: Email,
-        password: Password,
-        role: role,
+        Email: Email,
+        Password: Password,
+        Role: role,
       });
     }
 
     // Encriptar contraseña
     const salt = await bcrypt.genSalt(10);
-    usuario.password = await bcrypt.hash(Password, salt);
+    usuario.Password = await bcrypt.hash(Password, salt);
 
     await usuario.save();
 
     res.status(201).json({
-      msg: `${role === "student" ? "Estudiante" : "Profesor"} registrado correctamente`,
+      msg: `${role === "student" ? "Student" : "Teacher"} registered successfully`,
     });
 
   } catch (error) {
     res.status(500).json({
-      msg: "Error al registrar el usuario",
+      msg: "Error registering user",
       errorMSG: error.message,
     });
   }
@@ -77,25 +72,25 @@ exports.loginUsuario = async (req, res) => {
     let usuario;
 
     if (role === "student") {
-      usuario = await Student.findOne({ email: Email });
+      usuario = await Student.findOne({ Email: Email });
       if (!usuario)
-        return res.status(400).json({ msg: "El estudiante no existe" });
+        return res.status(400).json({ msg: "Student does not exist" });
     } else {
-      usuario = await Teacher.findOne({ email: Email });
+      usuario = await Teacher.findOne({ Email: Email });
       if (!usuario)
-        return res.status(400).json({ msg: "El profesor no existe" });
+        return res.status(400).json({ msg: "Teacher does not exist" });
     }
 
-    const isMatch = await bcrypt.compare(Password, usuario.password);
+    const isMatch = await bcrypt.compare(Password, usuario.Password);
     if (!isMatch)
-      return res.status(400).json({ msg: "Contraseña incorrecta" });
+      return res.status(400).json({ msg: "Incorrect password" });
 
     // JWT incluye el role REAL (seguro)
     const payload = {
       usuario: {
-        id: usuario.id,
-        email: usuario.email,
-        role: usuario.role,
+        ID: usuario.ID,
+        Email: usuario.Email,
+        Role: usuario.Role,
       },
     };
 
@@ -111,7 +106,7 @@ exports.loginUsuario = async (req, res) => {
 
   } catch (error) {
     res.status(500).json({
-      msg: "Error en el servidor",
+      msg: "Server error",
       errorMSG: error.message,
     });
   }
