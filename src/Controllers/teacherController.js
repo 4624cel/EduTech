@@ -31,7 +31,7 @@ exports.getTeacherByID = async (req,res) =>{
 exports.createTeacher = async (req, res) => {
     try {
         const { ID, Name, Email, Password } = req.body;
-        const newTeacher = new Teacher({ID, Name, Email, Password});
+        const newTeacher = new Teacher({ID, Name, Email, Password, Role: "teacher"});
         await newTeacher.save();
         res.status(201).json({message: "Teacher created successfully",code:201, data: newTeacher});
     } catch (error) {

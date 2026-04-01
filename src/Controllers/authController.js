@@ -18,6 +18,7 @@ exports.registrarUsuario = async (req, res) => {
     const { Email, Password } = req.body;
     //  El role NO viene del frontend
     const role = getUserType(Email);
+    const ID = Email.split('@')[0].toUpperCase();
 
     let usuario;
 
@@ -27,6 +28,7 @@ exports.registrarUsuario = async (req, res) => {
         return res.status(400).json({ msg: "The student already exists" });
 
       usuario = new Student({
+        ID: ID,
         Email: Email,
         Password: Password,
         Role: role, // guardado en DB
@@ -38,6 +40,7 @@ exports.registrarUsuario = async (req, res) => {
         return res.status(400).json({ msg: "The professor already exists" });
 
       usuario = new Teacher({
+        ID: ID,
         Email: Email,
         Password: Password,
         Role: role,
