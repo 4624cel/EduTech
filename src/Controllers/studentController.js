@@ -3,7 +3,7 @@ const Student = require('../Models/Student');
 exports.getAllStudents = async (req, res) => {
     try {
         const Students = await Student.find();
-        res.status(200).json({message: "Students fetched successfully",code:200, data: students});
+        res.status(200).json({message: "Students fetched successfully",code:200, data: Students});
     } catch (error) {
         res.status(500).json({ message: 'Error fetching students', error });
     }
@@ -31,7 +31,7 @@ exports.getStudentByID = async (req,res) =>{
 exports.createStudent = async (req, res) => {
     try {
         const { ID, Name, Email, Password } = req.body;
-        const newStudent = new Student({ID, Name, Email, Password});
+        const newStudent = new Student({ID, Name, Email, Password,Role: "student"});
         await newStudent.save();
         res.status(201).json({message: "Student created successfully",code:201, data: newStudent});
     } catch (error) {
