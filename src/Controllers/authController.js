@@ -88,7 +88,6 @@ exports.loginUsuario = async (req, res) => {
     // JWT incluye el role REAL (seguro)
     const payload = {
       usuario: {
-        ID: usuario.ID,
         Email: usuario.Email,
         Role: usuario.Role,
       },
