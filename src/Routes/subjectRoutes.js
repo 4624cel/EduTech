@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const subjectController = require('../Controllers/subjectController');
-const Auth = require('../Middlewares/auth');
+const Auth = require('../Middlewares/Auth');
 
 router.get('/getAllSubjects',Auth, subjectController.getAllSubjects);
 router.get('/getSubject/:ID', Auth, subjectController.getSubjectByID);
