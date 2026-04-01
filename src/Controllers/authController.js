@@ -18,7 +18,7 @@ exports.registrarUsuario = async (req, res) => {
     const { Email, Password } = req.body;
     //  El role NO viene del frontend
     const role = getUserType(Email);
-    const ID = Email.split('@')[0].toUpperCase();
+    const ID = Email.split('@')[0].replace(/^[a-zA-Z]+/, '');
 
     let usuario;
 
