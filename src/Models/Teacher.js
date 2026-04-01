@@ -5,6 +5,9 @@ const teacherSchema = new mongoose.Schema({
         type: String,
         unique: true
     },
+    Photo:{
+        type: String,
+    },
     Name:{
         type: String,
     },
