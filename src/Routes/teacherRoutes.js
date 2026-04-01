@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const teacherController = require('../Controllers/teacherController');
-const Auth = require('../Middlewares/auth');
+const Auth = require('../Middlewares/Auth');
 
 router.get('/getAllTeachers',Auth, teacherController.getAllTeachers);
 router.get('/getTeacher/:ID', Auth, teacherController.getTeacherByID);
