@@ -30,23 +30,54 @@ exports.getStudentByID = async (req,res) =>{
 
 exports.createStudent = async (req, res) => {
     try {
-        const { ID, Name, Email, Password } = req.body;
-        const newStudent = new Student({ID, Name, Email, Password,Role: "student"});
+        const { ID, Name, Email, Subject } = req.body;
+
+        // Creamos el estudiante con los campos permitidos
+        const newStudent = new Student({
+            ID,
+            Name,
+            Email,
+            Subjects: [Subject], // Convertimos Subject en un array
+            Role: "student"
+        });
+
         await newStudent.save();
-        res.status(201).json({message: "Student created successfully",code:201, data: newStudent});
+
+        res.status(201).json({
+            message: "Student created successfully",
+            code: 201,
+            data: newStudent
+        });
     } catch (error) {
-        res.status(400).json({ message: 'Error creating student', error });
+        res.status(400).json({
+            message: 'Error creating student',
+            error
+        });
     }
 };
 
 exports.updateStudent = async (req, res) => {
     try {
         const { ID } = req.params;
-        const { Name, Email } = req.body;
-        const updatedStudent = await Student.findOneAndUpdate({ ID }, { Name, Email }, { new: true });
+        const { Name, Email, Subjects, Photo } = req.body;
+
+        // Construimos un objeto solo con los campos permitidos
+        const updates = {};
+        if (Name) updates.Name = Name;
+        if (Email) updates.Email = Email;
+        if (Subjects) updates.Subjects = Subjects;
+        if (Photo) updates.Photo = Photo;
+
+        const updatedStudent = await Student.findOneAndUpdate(
+            { ID },
+            updates,
+            { new: true } // Devuelve el documento actualizado
+        );
+
         if (!updatedStudent) {
             return res.status(404).json({ message: 'Student not found' });
         }
+
         res.status(200).json(updatedStudent);
     } catch (error) {
         res.status(500).json({ message: 'Error updating student', error });

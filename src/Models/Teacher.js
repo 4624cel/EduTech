@@ -21,6 +21,10 @@ const teacherSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    Courses: { 
+        type: [String], 
+        default: [] 
+    },
     Role:{
         type: String,
         required: true

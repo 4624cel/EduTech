@@ -6,19 +6,29 @@ const jwt = require("jsonwebtoken");
 // Detectar rol automáticamente
 const getUserType = (email) => {
   const regexStudent = /^st\d+/i;
+  const regexTeacher = /^th\d+/i;
+
   if (regexStudent.test(email)) {
     return "student";
   }
-  return "teacher";
+
+  if (regexTeacher.test(email)) {
+    return "teacher";
+  }
+
+  return null; // opcional: por si no cumple ningún formato
 };
 
 // Registro
 exports.registrarUsuario = async (req, res) => {
   try {
-    const { Email, Password } = req.body;
+    const { Email, Password , Name } = req.body;
     //  El role NO viene del frontend
     const role = getUserType(Email);
     const ID = Email.split('@')[0].replace(/^[a-zA-Z]+/, '');
+     if (!Name || !Email || !Password) {
+      return res.status(400).json({ msg: "Name, Email, and Password are required" });
+    }
 
     let usuario;
 
@@ -29,6 +39,7 @@ exports.registrarUsuario = async (req, res) => {
 
       usuario = new Student({
         ID: ID,
+        Name: Name,  
         Email: Email,
         Password: Password,
         Role: role, // guardado en DB
@@ -41,6 +52,7 @@ exports.registrarUsuario = async (req, res) => {
 
       usuario = new Teacher({
         ID: ID,
+        Name: Name,  
         Email: Email,
         Password: Password,
         Role: role,
