@@ -30,29 +30,60 @@ exports.getTeacherByID = async (req,res) =>{
 
 exports.createTeacher = async (req, res) => {
     try {
-        const { ID, Name, Email, Password } = req.body;
-        const newTeacher = new Teacher({ID, Name, Email, Password, Role: "teacher"});
+        const { ID, Name, Email, Photo } = req.body;
+
+        // Creamos el teacher solo con los campos permitidos
+        const newTeacher = new Teacher({
+            ID,
+            Name,
+            Email,
+            Photo,
+            Role: "teacher"
+        });
+
         await newTeacher.save();
-        res.status(201).json({message: "Teacher created successfully",code:201, data: newTeacher});
+
+        res.status(201).json({
+            message: "Teacher created successfully",
+            code: 201,
+            data: newTeacher
+        });
     } catch (error) {
-        res.status(400).json({ message: 'Error creating teacher', error });
+        res.status(400).json({
+            message: 'Error creating teacher',
+            error
+        });
     }
 };
-
 exports.updateTeacher = async (req, res) => {
     try {
         const { ID } = req.params;
-        const { Name, Email } = req.body;
-        const updatedTeacher = await Teacher.findOneAndUpdate({ ID }, { Name, Email }, { new: true });
+        const { Name, Email, Courses, Photo } = req.body;
+
+        // Construimos un objeto solo con los campos permitidos
+        const updates = {};
+        if (Name) updates.Name = Name;
+        if (Email) updates.Email = Email;
+        if (Courses) updates.Courses = Courses;
+        if (Photo) updates.Photo = Photo;
+
+        const updatedTeacher = await Teacher.findOneAndUpdate(
+            { ID },
+            updates,
+            { new: true } // Devuelve el documento actualizado
+             ).populate({
+            path: 'Courses',
+            select: 'Name -_id' 
+        });
         if (!updatedTeacher) {
             return res.status(404).json({ message: 'Teacher not found' });
         }
+
         res.status(200).json(updatedTeacher);
     } catch (error) {
         res.status(500).json({ message: 'Error updating teacher', error });
     }
 };
-
 exports.deleteTeacher = async (req, res) => {
     try {
         const { ID } = req.params;

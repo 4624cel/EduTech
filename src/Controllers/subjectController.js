@@ -41,23 +41,45 @@ exports.createSubject = async (req, res) => {
 };
 
 exports.updateSubject = async (req, res) => {
-    try {
-        const { ID } = req.params;
-        const { Name, Teacher } = req.body;
-        const updatedSubject = await Subject.findOneAndUpdate({ ID }, { Name, Teacher }, { new: true });
-        if (!updatedSubject) {
-            return res.status(404).json({ message: 'Subject not found' });
-        }
-        res.status(200).json(updatedSubject);
-    } catch (error) {
-        res.status(500).json({ message: 'Error updating subject', error });
-    }
-};
+  try {
+    const { ID } = req.params; // _id de la materia
+    const { Name, Teacher: teacherId } = req.body; // Teacher debe ser ObjectId
 
+    // Buscar el teacher por _id
+    const teacherDoc = await Teacher.findById(teacherId);
+    if (!teacherDoc) {
+      return res.status(404).json({ message: `Teacher with ID "${teacherId}" not found` });
+    }
+
+    // Actualizar la materia
+    const updatedSubject = await Subject.findByIdAndUpdate(
+      ID, // _id de la materia
+      { Name, Teacher: teacherDoc._id },
+      { new: true }
+    );
+
+    if (!updatedSubject) {
+      return res.status(404).json({ message: 'Subject not found' });
+    }
+
+    // Responder con datos actualizados
+    res.status(200).json({
+      Name: updatedSubject.Name,
+      Teacher: teacherDoc.Name 
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: 'Error updating subject',
+      error: error.message || error.toString()
+    });
+  }
+};
 exports.deleteSubject = async (req, res) => {
     try {
         const { ID } = req.params;
-        const deletedSubject = await Subject.findOneAndDelete({ ID });
+        const deletedSubject = await Subject.findOneAndDelete(ID);
         if (!deletedSubject) {
             return res.status(404).json({ message: 'Subject not found', code: 404 });
         } 
