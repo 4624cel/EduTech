@@ -41,45 +41,45 @@ exports.createSubject = async (req, res) => {
 };
 
 exports.updateSubject = async (req, res) => {
-    try {
-        const { ID } = req.params; // Puede ser código de materia, no ObjectId
-        const { Name, Teacher } = req.body;
+  try {
+    const { ID } = req.params; // _id de la materia
+    const { Name, Teacher: teacherId } = req.body; // Teacher debe ser ObjectId
 
-        // Buscar el teacher por nombre para obtener su ObjectId
-        const teacherDoc = await Teacher.findOne({ name: Teacher });
-        if (!teacherDoc) {
-            return res.status(404).json({ message: `Teacher "${Teacher}" not found` });
-        }
+    // Buscar el teacher por _id
+    const teacherDoc = await Teacher.findById(teacherId);
+    if (!teacherDoc) {
+      return res.status(404).json({ message: `Teacher with ID "${teacherId}" not found` });
+    }
 
-        const updatedSubject = await Subject.findOneAndUpdate(
-            { code: ID },  // o {_id: ID} si usas ObjectId
-            { Name, Teacher: teacherDoc._id },
-            { new: true }
-        );
+    // Actualizar la materia
+    const updatedSubject = await Subject.findByIdAndUpdate(
+      ID, // _id de la materia
+      { Name, Teacher: teacherDoc._id },
+      { new: true }
+    );
 
-        if (!updatedSubject) {
-            return res.status(404).json({ message: 'Subject not found' });
-        }
+    if (!updatedSubject) {
+      return res.status(404).json({ message: 'Subject not found' });
+    }
 
-        // Responder con los datos actualizados
-        res.status(200).json({
-            Name: updatedSubject.Name,
-            Teacher: Teacher // Retornar el nombre en lugar del ObjectId
-        });
-        
-    } catch (error) {
-    console.error(error); 
-    res.status(500).json({
-        message: 'Error updating subject',
-        error: error.message || error.toString() 
+    // Responder con datos actualizados
+    res.status(200).json({
+      Name: updatedSubject.Name,
+      Teacher: teacherDoc.Name 
     });
 
-    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: 'Error updating subject',
+      error: error.message || error.toString()
+    });
+  }
 };
 exports.deleteSubject = async (req, res) => {
     try {
         const { ID } = req.params;
-        const deletedSubject = await Subject.findOneAndDelete({ ID });
+        const deletedSubject = await Subject.findOneAndDelete(ID);
         if (!deletedSubject) {
             return res.status(404).json({ message: 'Subject not found', code: 404 });
         } 

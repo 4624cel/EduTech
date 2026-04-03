@@ -71,8 +71,10 @@ exports.updateTeacher = async (req, res) => {
             { ID },
             updates,
             { new: true } // Devuelve el documento actualizado
-        );
-
+             ).populate({
+            path: 'Courses',
+            select: 'Name -_id' 
+        });
         if (!updatedTeacher) {
             return res.status(404).json({ message: 'Teacher not found' });
         }

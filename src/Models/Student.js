@@ -12,7 +12,7 @@ const studentSchema = new mongoose.Schema({
     Name:{
         type: String,
    
-    },
+    },  
     Email: {   
         type: String,
         required: true,
@@ -30,7 +30,8 @@ const studentSchema = new mongoose.Schema({
     Role:{
         type: String,
         required: true
-    }
-})
+    },
+ 
+});
 
 module.exports = mongoose.model('Student', studentSchema)
