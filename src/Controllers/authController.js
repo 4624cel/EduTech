@@ -25,6 +25,11 @@ exports.registrarUsuario = async (req, res) => {
     const { Email, Password , Name } = req.body;
     //  El role NO viene del frontend
     const role = getUserType(Email);
+    if (!role) {
+    return res.status(400).json({ 
+      msg: "Invalid email format. Must start with 'st' (student) or 'th' (teacher) followed by numbers." 
+    });
+}
     const ID = Email.split('@')[0].replace(/^[a-zA-Z]+/, '');
      if (!Name || !Email || !Password) {
       return res.status(400).json({ msg: "Name, Email, and Password are required" });
