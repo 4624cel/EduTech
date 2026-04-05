@@ -22,7 +22,7 @@ app.use('/api/', teacherRoutes);
 app.use('/api/', studentRoutes);
 app.use('/api/auth', authRoutes);
 app.get('/', (req, res) => {
-  res.send('Servidor funcionando!');
+  res.send('El Servidor esta funcionando!');
 });
 
 app.listen(PORT, () => {
