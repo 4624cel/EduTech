@@ -6,7 +6,7 @@ const teacherRoutes = require('./src/Routes/teacherRoutes');
 const subjectRoutes = require('./src/Routes/subjectRoutes');
 const authRoutes = require('./src/Routes/auth');
 const swaggerUi = require('swagger-ui-express');
-const swaggerSpec = require('.src/Config/swagger');
+const swaggerSpec = require('./src/Config/swagger');
 
 const app = express();
 const PORT = process.env.PORT ||  3000;
