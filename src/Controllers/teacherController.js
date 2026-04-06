@@ -1,5 +1,5 @@
 const Teacher = require('../Models/Teacher');
-
+const Subject = require('../Models/Subject');
 exports.getAllTeachers = async (req, res) => {
     try {
         const teachers = await Teacher.find();
@@ -64,7 +64,14 @@ exports.updateTeacher = async (req, res) => {
         const updates = {};
         if (Name) updates.Name = Name;
         if (Email) updates.Email = Email;
-        if (Courses) updates.Courses = Courses;
+         if (Courses && Array.isArray(Courses) && Courses.length > 0) {
+            const courseDocs = await Subject.find({ ID: { $in: Courses } });
+            if (courseDocs.length !== Courses.length) {
+                return res.status(400).json({ message: 'Some Courses IDs not found' });
+            }
+            updates.Courses = courseDocs.map(c => c._id);
+        }
+ 
         if (Photo) updates.Photo = Photo;
 
         const updatedTeacher = await Teacher.findOneAndUpdate(
@@ -73,7 +80,7 @@ exports.updateTeacher = async (req, res) => {
             { new: true } // Devuelve el documento actualizado
              ).populate({
             path: 'Courses',
-            select: 'Name -_id' 
+            select: 'ID Name -_id'
         });
         if (!updatedTeacher) {
             return res.status(404).json({ message: 'Teacher not found' });
@@ -81,7 +88,7 @@ exports.updateTeacher = async (req, res) => {
 
         res.status(200).json(updatedTeacher);
     } catch (error) {
-        res.status(500).json({ message: 'Error updating teacher', error });
+        res.status(500).json({ message: 'Error updating teacher', error : error.message || error });
     }
 };
 exports.deleteTeacher = async (req, res) => {

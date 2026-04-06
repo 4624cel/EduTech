@@ -9,7 +9,7 @@ module.exports= (req ,res ,next) =>{
     const token = authHeader && authHeader.split(" ")[1]; // separa Bearer
  
     if(!token){
-        return res.status(401).json ({msg:"No hay token ,permiso denegado"});
+        return res.status(401).json ({msg:"No token, permission denied"});
 
     }//comprobando si el token existe
     try {
@@ -18,7 +18,7 @@ module.exports= (req ,res ,next) =>{
         next();
         
     } catch (error) {
-        res.status(401).json({msg:"token no valido"})
+        res.status(401).json({msg:"Invalid token"})
         
     } 
 }
