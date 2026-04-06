@@ -20,6 +20,7 @@ const options = {
           type: 'http',
           scheme: 'bearer',
           bearerFormat: 'JWT',
+          description: 'Obtén el token en POST /auth/login y pégalo aquí como: Bearer <token>',
         },
       },
       schemas: {
@@ -33,8 +34,9 @@ const options = {
             Role: { type: 'string', example: 'student' },
             Subject: {
               type: 'array',
+              description: 'Lista de _ids de materias (ObjectId de MongoDB)',
               items: { type: 'string' },
-              example: ['Matemáticas', 'Historia'],
+              example: ['664f1a2b3c4d5e6f7a8b9c0d'],
             },
           },
         },
@@ -46,6 +48,12 @@ const options = {
             Email: { type: 'string', example: 'th001@edu.com' },
             Photo: { type: 'string', example: 'https://example.com/foto.jpg' },
             Role: { type: 'string', example: 'teacher' },
+            Courses: {
+              type: 'array',
+              description: 'Lista de _ids de materias asignadas (ObjectId de MongoDB)',
+              items: { type: 'string' },
+              example: ['664f1a2b3c4d5e6f7a8b9c0d'],
+            },
           },
         },
         Subject: {
@@ -53,7 +61,11 @@ const options = {
           properties: {
             ID: { type: 'string', example: 'MAT101' },
             Name: { type: 'string', example: 'Matemáticas' },
-            Teacher: { type: 'string', example: '664f1a2b3c4d5e6f7a8b9c0d' },
+            Teacher: {
+              type: 'string',
+              description: '_id de MongoDB del maestro asignado',
+              example: '664f1a2b3c4d5e6f7a8b9c0d',
+            },
           },
         },
         Error: {

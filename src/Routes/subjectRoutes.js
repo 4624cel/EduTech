@@ -3,14 +3,13 @@ const router = express.Router();
 const subjectController = require('../Controllers/subjectController');
 const Auth = require('../Middlewares/Auth');
 
-
 /**
  * @swagger
  * tags:
  *   name: Subjects
  *   description: Gestión de materias
  */
- 
+
 /**
  * @swagger
  * /getAllSubjects:
@@ -21,7 +20,7 @@ const Auth = require('../Middlewares/Auth');
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: Lista de materias con maestro asignado
+ *         description: Lista de materias con maestro populado
  *         content:
  *           application/json:
  *             schema:
@@ -39,15 +38,16 @@ const Auth = require('../Middlewares/Auth');
  *                     $ref: '#/components/schemas/Subject'
  *       401:
  *         description: Token no válido o no proporcionado
+ *       500:
+ *         description: Error del servidor
  */
-
-router.get('/getAllSubjects',Auth, subjectController.getAllSubjects);
+router.get('/getAllSubjects', Auth, subjectController.getAllSubjects);
 
 /**
  * @swagger
  * /getSubject/{ID}:
  *   get:
- *     summary: Obtener una materia por ID de MongoDB (_id)
+ *     summary: Obtener una materia por su ID personalizado
  *     tags: [Subjects]
  *     security:
  *       - bearerAuth: []
@@ -57,11 +57,11 @@ router.get('/getAllSubjects',Auth, subjectController.getAllSubjects);
  *         required: true
  *         schema:
  *           type: string
- *         description: _id de MongoDB de la materia
- *         example: 664f1a2b3c4d5e6f7a8b9c0d
+ *         description: ID personalizado de la materia
+ *         example: MAT101
  *     responses:
  *       200:
- *         description: Datos de la materia
+ *         description: Datos de la materia con maestro populado
  *         content:
  *           application/json:
  *             schema:
@@ -76,7 +76,6 @@ router.get('/getAllSubjects',Auth, subjectController.getAllSubjects);
  *       404:
  *         description: Materia no encontrada
  */
-
 router.get('/getSubject/:ID', Auth, subjectController.getSubjectByID);
 
 /**
@@ -84,7 +83,7 @@ router.get('/getSubject/:ID', Auth, subjectController.getSubjectByID);
  * /createSubject:
  *   post:
  *     summary: Crear una nueva materia
- *     description: El campo Teacher debe ser el _id de MongoDB de un maestro existente.
+ *     description: El campo Teacher es el ID personalizado del maestro (ej. th001), no el _id de MongoDB.
  *     tags: [Subjects]
  *     security:
  *       - bearerAuth: []
@@ -104,8 +103,8 @@ router.get('/getSubject/:ID', Auth, subjectController.getSubjectByID);
  *                 example: Matemáticas
  *               Teacher:
  *                 type: string
- *                 description: _id de MongoDB del maestro
- *                 example: 664f1a2b3c4d5e6f7a8b9c0d
+ *                 description: ID personalizado del maestro
+ *                 example: th001
  *     responses:
  *       201:
  *         description: Materia creada exitosamente
@@ -113,16 +112,17 @@ router.get('/getSubject/:ID', Auth, subjectController.getSubjectByID);
  *         description: Error en los datos
  *       401:
  *         description: Token no válido o no proporcionado
+ *       404:
+ *         description: Maestro no encontrado con ese ID
  */
-
 router.post('/createSubject', Auth, subjectController.createSubject);
 
 /**
  * @swagger
  * /updateSubject/{ID}:
  *   put:
- *     summary: Actualizar una materia
- *     description: ID en la URL es el _id de MongoDB de la materia. Teacher debe ser el _id de un maestro existente.
+ *     summary: Actualizar una materia por su ID personalizado
+ *     description: El campo Teacher es el ID personalizado del maestro (ej. th001), no el _id de MongoDB.
  *     tags: [Subjects]
  *     security:
  *       - bearerAuth: []
@@ -132,8 +132,8 @@ router.post('/createSubject', Auth, subjectController.createSubject);
  *         required: true
  *         schema:
  *           type: string
- *         description: _id de MongoDB de la materia
- *         example: 664f1a2b3c4d5e6f7a8b9c0d
+ *         description: ID personalizado de la materia
+ *         example: MAT101
  *     requestBody:
  *       required: true
  *       content:
@@ -146,24 +146,34 @@ router.post('/createSubject', Auth, subjectController.createSubject);
  *                 example: Matemáticas Avanzadas
  *               Teacher:
  *                 type: string
- *                 description: _id de MongoDB del nuevo maestro
- *                 example: 664f1a2b3c4d5e6f7a8b9c0d
+ *                 description: ID personalizado del nuevo maestro
+ *                 example: th002
  *     responses:
  *       200:
  *         description: Materia actualizada
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 Name:
+ *                   type: string
+ *                   example: Matemáticas Avanzadas
+ *                 Teacher:
+ *                   type: string
+ *                   example: María López
  *       401:
  *         description: Token no válido o no proporcionado
  *       404:
  *         description: Materia o maestro no encontrado
  */
-
 router.put('/updateSubject/:ID', Auth, subjectController.updateSubject);
 
 /**
  * @swagger
  * /deleteSubject/{ID}:
  *   delete:
- *     summary: Eliminar una materia
+ *     summary: Eliminar una materia por su ID personalizado
  *     tags: [Subjects]
  *     security:
  *       - bearerAuth: []
@@ -173,7 +183,7 @@ router.put('/updateSubject/:ID', Auth, subjectController.updateSubject);
  *         required: true
  *         schema:
  *           type: string
- *         example: 664f1a2b3c4d5e6f7a8b9c0d
+ *         example: MAT101
  *     responses:
  *       200:
  *         description: Materia eliminada exitosamente
@@ -182,7 +192,6 @@ router.put('/updateSubject/:ID', Auth, subjectController.updateSubject);
  *       404:
  *         description: Materia no encontrada
  */
-
 router.delete('/deleteSubject/:ID', Auth, subjectController.deleteSubject);
 
 module.exports = router;

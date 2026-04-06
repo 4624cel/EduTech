@@ -9,7 +9,7 @@ const Auth = require('../Middlewares/Auth');
  *   name: Teachers
  *   description: Gestión de maestros
  */
- 
+
 /**
  * @swagger
  * /getAllTeachers:
@@ -39,14 +39,13 @@ const Auth = require('../Middlewares/Auth');
  *       401:
  *         description: Token no válido o no proporcionado
  */
-
-router.get('/getAllTeachers',Auth, teacherController.getAllTeachers);
+router.get('/getAllTeachers', Auth, teacherController.getAllTeachers);
 
 /**
  * @swagger
  * /getTeacher/{ID}:
  *   get:
- *     summary: Obtener un maestro por ID
+ *     summary: Obtener un maestro por su ID personalizado
  *     tags: [Teachers]
  *     security:
  *       - bearerAuth: []
@@ -74,7 +73,6 @@ router.get('/getAllTeachers',Auth, teacherController.getAllTeachers);
  *       404:
  *         description: Maestro no encontrado
  */
-
 router.get('/getTeacher/:ID', Auth, teacherController.getTeacherByID);
 
 /**
@@ -82,6 +80,7 @@ router.get('/getTeacher/:ID', Auth, teacherController.getTeacherByID);
  * /createTeacher:
  *   post:
  *     summary: Crear un nuevo maestro
+ *     description: El Role se asigna automáticamente como "teacher". No incluir Password aquí, usar /auth/signup para registrar con contraseña.
  *     tags: [Teachers]
  *     security:
  *       - bearerAuth: []
@@ -113,7 +112,6 @@ router.get('/getTeacher/:ID', Auth, teacherController.getTeacherByID);
  *       401:
  *         description: Token no válido o no proporcionado
  */
-
 router.post('/createTeacher', Auth, teacherController.createTeacher);
 
 /**
@@ -121,6 +119,7 @@ router.post('/createTeacher', Auth, teacherController.createTeacher);
  * /updateTeacher/{ID}:
  *   put:
  *     summary: Actualizar datos de un maestro
+ *     description: El campo Courses es un array de IDs personalizados de materias (ej. MAT101), no _ids de MongoDB.
  *     tags: [Teachers]
  *     security:
  *       - bearerAuth: []
@@ -147,22 +146,29 @@ router.post('/createTeacher', Auth, teacherController.createTeacher);
  *               Photo:
  *                 type: string
  *                 example: https://example.com/nueva-foto.jpg
+ *               Courses:
+ *                 type: array
+ *                 description: IDs personalizados de las materias a asignar
+ *                 items:
+ *                   type: string
+ *                 example: [MAT101, FIS202]
  *     responses:
  *       200:
- *         description: Maestro actualizado
+ *         description: Maestro actualizado con materias populadas
+ *       400:
+ *         description: Algún ID de materia no encontrado
  *       401:
  *         description: Token no válido o no proporcionado
  *       404:
  *         description: Maestro no encontrado
  */
-
 router.put('/updateTeacher/:ID', Auth, teacherController.updateTeacher);
 
 /**
  * @swagger
  * /deleteTeacher/{ID}:
  *   delete:
- *     summary: Eliminar un maestro
+ *     summary: Eliminar un maestro por su ID personalizado
  *     tags: [Teachers]
  *     security:
  *       - bearerAuth: []
@@ -181,7 +187,6 @@ router.put('/updateTeacher/:ID', Auth, teacherController.updateTeacher);
  *       404:
  *         description: Maestro no encontrado
  */
-
 router.delete('/deleteTeacher/:ID', Auth, teacherController.deleteTeacher);
 
 module.exports = router;
