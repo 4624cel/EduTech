@@ -45,7 +45,7 @@ exports.registrarUsuario = async (req, res) => {
         Role: role, // guardado en DB
       });
 
-    } else {
+    } if (role === "teacher") {
       usuario = await Teacher.findOne({ Email: Email });
       if (usuario)
         return res.status(400).json({ msg: "The professor already exists" });
@@ -56,6 +56,18 @@ exports.registrarUsuario = async (req, res) => {
         Email: Email,
         Password: Password,
         Role: role,
+      });
+    } else {
+      usuario = await Teacher.findOne({ Email: Email });
+      if (usuario)
+        return res.status(400).json({ msg: "The professor already exists" });
+
+      usuario = new Teacher({
+        ID: "Admin",
+        Name: Name,  
+        Email: Email,
+        Password: Password,
+        Role: "admin",
       });
     }
 
