@@ -32,7 +32,7 @@ exports.getSubjectByID = async (req,res) =>{
 
 exports.createSubject = async (req, res) => {
     try {
-        const { ID, Name, Teacher: teacherCustomID } = req.body;
+        const { ID, Name, Teacher: teacherCustomID , Photo} = req.body;
 
         // Buscar el teacher por tu ID personalizado
         const teacherDoc = await Teacher.findOne({ ID: teacherCustomID });
@@ -45,7 +45,8 @@ exports.createSubject = async (req, res) => {
         const newSubject = new Subject({
             ID,
             Name,
-            Teacher: teacherDoc._id
+            Teacher: teacherDoc._id,
+            Photo
         });
 
         await newSubject.save();
@@ -53,7 +54,12 @@ exports.createSubject = async (req, res) => {
         res.status(201).json({
             message: "Subject created successfully",
             code: 201,
-            data: newSubject
+             data: {
+                ID: newSubject.ID,
+                Name: newSubject.Name,
+                Teacher: teacherDoc.Name,
+                Photo: newSubject.Photo
+      }
         });
 
     } catch (error) {

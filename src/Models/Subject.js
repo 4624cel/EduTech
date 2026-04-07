@@ -11,6 +11,9 @@ const subjectSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    Photo: {
+        type: String,
+    },
     Teacher: {   
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Teacher',

@@ -6,9 +6,6 @@ const adminSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
-    Photo: {
-        type: String,
-    },
     Name: {
         type: String,
         required: true
@@ -27,6 +24,6 @@ const adminSchema = new mongoose.Schema({
         default: 'Admin',
         required: true
     },
-    }); // timestamps opcional para saber cuándo se creó/actualizó
+}, { timestamps: true }); 
 
 module.exports = mongoose.model('Admin', adminSchema);
