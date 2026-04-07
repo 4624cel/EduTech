@@ -1,7 +1,7 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongoose')
 
-const adminSchema = new mongoose.Schema({
-    ID: {
+const teacherSchema = new mongoose.Schema({
+    ID:{
         type: String,
         required: true,
         unique: true
@@ -9,24 +9,26 @@ const adminSchema = new mongoose.Schema({
     Photo: {
         type: String,
     },
-    Name: {
+    Name:{
         type: String,
         required: true
     },
-    Email: {
+    Email: {   
         type: String,
         required: true,
-        unique: true
     },
     Password: {
         type: String,
         required: true
     },
-    Role: {
+    Courses: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Subject'
+    }],
+    Role:{
         type: String,
-        default: 'Admin',
         required: true
-    },
-    }); // timestamps opcional para saber cuándo se creó/actualizó
+    }
+})
 
-module.exports = mongoose.model('Admin', adminSchema);
+module.exports = mongoose.model('Teacher', teacherSchema)
