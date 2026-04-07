@@ -1,9 +1,9 @@
 const Student = require("../Models/Student");
 const Teacher = require("../Models/Teacher");
+const Admin = require("../Models/Admin"); 
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
-// Detectar rol automáticamente
 const getUserType = (email) => {
   const regexStudent = /^st\d+/i;
   const regexTeacher = /^th\d+/i;
@@ -13,7 +13,7 @@ const getUserType = (email) => {
   if (regexTeacher.test(email)) return "teacher";
   if (regexAdmin.test(email)) return "admin";
 
-  return null; // ✅ Si no cumple ningún formato
+  return null;
 };
 
 // Registro
@@ -27,9 +27,8 @@ exports.registrarUsuario = async (req, res) => {
 
     const role = getUserType(Email);
 
-    // ✅ Validar que el email tenga un formato reconocido
     if (!role) {
-      return res.status(400).json({ msg: "Email format not recognized (must start with st, th, or admin)" });
+      return res.status(400).json({ msg: "Email format not recognized (must start with st, th, or ad)" });
     }
 
     const ID = Email.split('@')[0].replace(/^[a-zA-Z]+/, '');
@@ -42,22 +41,21 @@ exports.registrarUsuario = async (req, res) => {
 
       usuario = new Student({ ID, Name, Email, Password, Role: role });
 
-    } else if (role === "teacher") { // ✅ else if, no if suelto
+    } else if (role === "teacher") {
       usuario = await Teacher.findOne({ Email });
       if (usuario)
         return res.status(400).json({ msg: "The professor already exists" });
 
       usuario = new Teacher({ ID, Name, Email, Password, Role: role });
 
-    } else if (role === "admin") { // ✅ else if, no if suelto
-      usuario = await Teacher.findOne({ Email });
+    } else if (role === "admin") {
+      usuario = await Admin.findOne({ Email }); // ✅ Usar modelo Admin
       if (usuario)
         return res.status(400).json({ msg: "The admin already exists" });
 
-      usuario = new Teacher({ ID, Name, Email, Password, Role: role });
+      usuario = new Admin({ ID, Name, Email, Password, Role: "Admin" }); // ✅ Usar modelo Admin
     }
 
-    // Encriptar contraseña
     const salt = await bcrypt.genSalt(10);
     usuario.Password = await bcrypt.hash(Password, salt);
 
@@ -75,7 +73,7 @@ exports.registrarUsuario = async (req, res) => {
   }
 };
 
-// Login
+// Login (solo admins)
 exports.loginUsuario = async (req, res) => {
   try {
     const { Email, Password } = req.body;
@@ -86,17 +84,13 @@ exports.loginUsuario = async (req, res) => {
       return res.status(400).json({ msg: "Email format not recognized" });
     }
 
-    let usuario;
-
-    if (role === "student") {
-      usuario = await Student.findOne({ Email });
-      if (!usuario)
-        return res.status(400).json({ msg: "Student does not exist" });
-    } else { // teacher y admin están en la misma colección
-      usuario = await Teacher.findOne({ Email });
-      if (!usuario)
-        return res.status(400).json({ msg: "User does not exist" });
+    if (role !== "admin") {
+      return res.status(403).json({ msg: "Access denied. Only admins can log in." });
     }
+
+    const usuario = await Admin.findOne({ Email }); // ✅ Buscar en colección Admin
+    if (!usuario)
+      return res.status(400).json({ msg: "Admin does not exist" });
 
     const isMatch = await bcrypt.compare(Password, usuario.Password);
     if (!isMatch)
