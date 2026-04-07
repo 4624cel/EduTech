@@ -33,9 +33,8 @@ exports.getSubjectByID = async (req,res) =>{
 exports.createSubject = async (req, res) => {
     try {
         const { ID, Name, Teacher: teacherCustomID , Photo} = req.body;
-
-        // Buscar el teacher por tu ID personalizado
-        const teacherDoc = await Teacher.findOne({ ID: teacherCustomID });
+        const cleanedID = teacherCustomID.toString().trim();
+        const teacherDoc = await Teacher.findOne({ ID: cleanedID });
 
         if (!teacherDoc) {
             return res.status(404).json({ message: 'Teacher not found' });
