@@ -7,68 +7,54 @@ const jwt = require("jsonwebtoken");
 const getUserType = (email) => {
   const regexStudent = /^st\d+/i;
   const regexTeacher = /^th\d+/i;
+  const regexAdmin = /^ad\d+/i;
 
-  if (regexStudent.test(email)) {
-    return "student";
-  }
+  if (regexStudent.test(email)) return "student";
+  if (regexTeacher.test(email)) return "teacher";
+  if (regexAdmin.test(email)) return "admin";
 
-  if (regexTeacher.test(email)) {
-    return "teacher";
-  }
-
-  return "admin"; // opcional: por si no cumple ningún formato
+  return null; // ✅ Si no cumple ningún formato
 };
 
 // Registro
 exports.registrarUsuario = async (req, res) => {
   try {
-    const { Email, Password , Name } = req.body;
-    //  El role NO viene del frontend
+    const { Email, Password, Name } = req.body;
 
-    const ID = Email.split('@')[0].replace(/^[a-zA-Z]+/, '');
-     if (!Name || !Email || !Password) {
+    if (!Name || !Email || !Password) {
       return res.status(400).json({ msg: "Name, Email, and Password are required" });
     }
 
+    const role = getUserType(Email);
+
+    // ✅ Validar que el email tenga un formato reconocido
+    if (!role) {
+      return res.status(400).json({ msg: "Email format not recognized (must start with st, th, or admin)" });
+    }
+
+    const ID = Email.split('@')[0].replace(/^[a-zA-Z]+/, '');
     let usuario;
 
     if (role === "student") {
-      usuario = await Student.findOne({ Email: Email });
+      usuario = await Student.findOne({ Email });
       if (usuario)
         return res.status(400).json({ msg: "The student already exists" });
 
-      usuario = new Student({
-        ID: ID,
-        Name: Name,  
-        Email: Email,
-        Password: Password,
-        Role: role, // guardado en DB
-      });
+      usuario = new Student({ ID, Name, Email, Password, Role: role });
 
-    } if (role === "teacher") {
-      usuario = await Teacher.findOne({ Email: Email });
+    } else if (role === "teacher") { // ✅ else if, no if suelto
+      usuario = await Teacher.findOne({ Email });
       if (usuario)
         return res.status(400).json({ msg: "The professor already exists" });
 
-      usuario = new Teacher({
-        ID: ID,
-        Name: Name,  
-        Email: Email,
-        Password: Password,
-        Role: role,
-      });
-    } else {
-      usuario = await Teacher.findOne({ Email: Email });
-      if (usuario)
-        return res.status(400).json({ msg: "The professor already exists" });
+      usuario = new Teacher({ ID, Name, Email, Password, Role: role });
 
-      usuario = new Teacher({
-        ID: "Admin",
-        Name: Name,  
-        Email: Email,
-        Password: Password,
-        Role: "admin",
-      });
+    } else if (role === "admin") { // ✅ else if, no if suelto
+      usuario = await Teacher.findOne({ Email });
+      if (usuario)
+        return res.status(400).json({ msg: "The admin already exists" });
+
+      usuario = new Teacher({ ID, Name, Email, Password, Role: role });
     }
 
     // Encriptar contraseña
@@ -78,7 +64,7 @@ exports.registrarUsuario = async (req, res) => {
     await usuario.save();
 
     res.status(201).json({
-      msg: `${role === "student" ? "Student" : "Teacher"} registered successfully`,
+      msg: `${role === "student" ? "Student" : role === "teacher" ? "Teacher" : "Admin"} registered successfully`,
     });
 
   } catch (error) {
@@ -96,23 +82,26 @@ exports.loginUsuario = async (req, res) => {
 
     const role = getUserType(Email);
 
+    if (!role) {
+      return res.status(400).json({ msg: "Email format not recognized" });
+    }
+
     let usuario;
 
     if (role === "student") {
-      usuario = await Student.findOne({ Email: Email });
+      usuario = await Student.findOne({ Email });
       if (!usuario)
         return res.status(400).json({ msg: "Student does not exist" });
-    } else {
-      usuario = await Teacher.findOne({ Email: Email });
+    } else { // teacher y admin están en la misma colección
+      usuario = await Teacher.findOne({ Email });
       if (!usuario)
-        return res.status(400).json({ msg: "Teacher does not exist" });
+        return res.status(400).json({ msg: "User does not exist" });
     }
 
     const isMatch = await bcrypt.compare(Password, usuario.Password);
     if (!isMatch)
       return res.status(400).json({ msg: "Incorrect password" });
 
-    // JWT incluye el role REAL (seguro)
     const payload = {
       usuario: {
         Email: usuario.Email,
