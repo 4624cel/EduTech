@@ -1,36 +1,36 @@
 # EduTech API
 
-REST API para la gestión de una plataforma educativa. Permite administrar estudiantes, maestros y materias con autenticación basada en JWT y persistencia en MongoDB Atlas.
+REST API for managing an educational platform. It allows you to manage students, teachers, and subjects with JWT-based authentication and persistence in MongoDB Atlas.
 
 ---
 
-## Tecnologías
+## Technologies
 
-- **Node.js** con Express 5
-- **MongoDB Atlas** con Mongoose
-- **JWT** para autenticación
-- **bcryptjs** para encriptación de contraseñas
-- **Swagger UI** para documentación interactiva
+- **Node.js** with Express 5  
+- **MongoDB Atlas** with Mongoose  
+- **JWT** for authentication  
+- **bcryptjs** for password encryption  
+- **Swagger UI** for interactive documentation 
 
 ---
 
-## Estructura del proyecto
+## Project Structure
 
 ```
 EduTech/
 ├── src/
 │   ├── Config/
-│   │   ├── BD_conexion.js       # Conexión a MongoDB Atlas
-│   │   └── swagger.js           # Configuración de Swagger
+│   │   ├── BD_conexion.js       # MongoDB Atlas connection
+│   │   └── swagger.js           # Swagger configuration
 │   ├── Controllers/
-│   │   ├── authController.js    # Registro y login
+│   │   ├── authController.js    # Registration and login
 │   │   ├── studentController.js
 │   │   ├── teacherController.js
 │   │   └── subjectController.js
 │   ├── Helpers/
-│   │   └── Token.js             # Generación y verificación de JWT
+│   │   └── Token.js             # JWT generation and verification
 │   ├── Middlewares/
-│   │   └── Auth.js              # Middleware de autenticación
+│   │   └── Auth.js              # Authentication middleware
 │   ├── Models/
 │   │   ├── Student.js
 │   │   ├── Teacher.js
@@ -47,80 +47,82 @@ EduTech/
 
 ---
 
-## Instalación
+## Installation
 
-### Prerrequisitos
+### Prerequisites
 
-- Node.js v18 o superior
-- Cuenta en [MongoDB Atlas](https://www.mongodb.com/atlas)
+- Node.js v18 or higher  
+- Account on [MongoDB Atlas](https://www.mongodb.com/atlas)
 
-### Pasos
+### Steps
 
-1. Clona el repositorio:
+1. Clone the repository:
 
 ```bash
 git clone https://github.com/4624cel/EduTech.git
 cd EduTech
 ```
 
-2. Instala las dependencias:
+2. Install dependencies:
 
 ```bash
 npm install
 ```
 
-3. Crea el archivo `.env` en la raíz del proyecto con las siguientes variables:
+3. Create the .env file in the project root with the following variables:
 
 ```env
 PORT=3000
-MONGO_URI=mongodb+srv://<usuario>:<contraseña>@cluster.mongodb.net/<dbname>
-JWT_SECRET=tu_clave_secreta
+MONGO_URI=mongodb+srv://<username>:<password>@cluster.mongodb.net/<dbname>
+JWT_SECRET=your_secret_key
 ```
 
-4. Inicia el servidor:
+4. Start the server:
 
 ```bash
 node index.js
 ```
 
-El servidor estará corriendo en `http://localhost:3000`.
+The server will be running at `http://localhost:3000`.
 
 ---
 
 ## Documentación
 
-La API cuenta con documentación interactiva generada con Swagger. Una vez que el servidor esté corriendo, accede a:
+Documentation
+
+The API includes interactive documentation generated with Swagger. Once the server is running, access:
 
 ```
 http://localhost:3000/api-docs
 ```
 
-Desde ahí puedes explorar y probar todos los endpoints directamente en el navegador.
+From there, you can explore and test all endpoints directly in the browser.
 
 ---
 
-## Autenticación
+## Authentication
 
-El sistema detecta el rol del usuario automáticamente a partir del formato del correo electrónico:
+The system automatically detects the user role based on the email format:
 
-| Formato del correo | Rol asignado |
+| Email format | Assigned role |
 |---|---|
-| `st` + números + `@dominio` | `student` |
-| `th` + números + `@dominio` | `teacher` |
+| `st` + números + `@domain` | `student` |
+| `th` + números + `@domain` | `teacher` |
 
-Ejemplo: `st12345@edu.com` → estudiante, `th001@edu.com` → maestro.
+Example: `st12345@edu.com` → student, `th001@edu.com` → teacher.
 
-### Flujo de autenticación
+### Authentication flow
 
-1. Regístrate en `POST /api/auth/signup`
-2. Inicia sesión en `POST /api/auth/login` y obtén el token JWT
-3. Incluye el token en el header de cada petición protegida:
+1. Register at `POST /api/auth/signup`
+2. Log in at `POST /api/auth/login` and obtain the JWT token
+3. Include the token in the header of each protected request:
 
 ```
 Authorization: Bearer <token>
 ```
 
-El token tiene una validez de **1 hora**.
+The token is valid for **1 hour**.
 
 ---
 
@@ -128,46 +130,46 @@ El token tiene una validez de **1 hora**.
 
 ### Auth — `/api/auth`
 
-| Método | Ruta | Descripción | Requiere token |
+| Method | Route | Description | Requires token |
 |---|---|---|---|
-| POST | `/signup` | Registrar un nuevo usuario | No |
-| POST | `/login` | Iniciar sesión y obtener JWT | No |
+| POST | `/signup` | Register a new user | No |
+| POST | `/login` | Log in and obtain JWT | No |
 
 ### Students — `/api`
 
-| Método | Ruta | Descripción | Requiere token |
+| Method | Route | Description | Requires token |
 |---|---|---|---|
-| GET | `/getAllStudents` | Obtener todos los estudiantes | Sí |
-| GET | `/getStudent/:ID` | Obtener un estudiante por ID | Sí |
-| POST | `/createStudent` | Crear un estudiante | Sí |
-| PUT | `/updateStudent/:ID` | Actualizar un estudiante | Sí |
-| DELETE | `/deleteStudent/:ID` | Eliminar un estudiante | Sí |
+| GET | `/getAllStudents` | Get all students | Yes |
+| GET | `/getStudent/:ID` | Get a student by ID | Yes |
+| POST | `/createStudent` | Create a student | Yes |
+| PUT | `/updateStudent/:ID` | Update a student | Yes |
+| DELETE | `/deleteStudent/:ID` | Delete a student | Yes |
 
 ### Teachers — `/api`
 
-| Método | Ruta | Descripción | Requiere token |
+| Method | Route | Description | Requires token |
 |---|---|---|---|
-| GET | `/getAllTeachers` | Obtener todos los maestros | Sí |
-| GET | `/getTeacher/:ID` | Obtener un maestro por ID | Sí |
-| POST | `/createTeacher` | Crear un maestro | Sí |
-| PUT | `/updateTeacher/:ID` | Actualizar un maestro | Sí |
-| DELETE | `/deleteTeacher/:ID` | Eliminar un maestro | Sí |
+| GET | `/getAllTeachers` | Get all teachers | Yes |
+| GET | `/getTeacher/:ID` | Get a teacher by ID | Yes |
+| POST | `/createTeacher` | Create a teacher | Yes |
+| PUT | `/updateTeacher/:ID` | Update a teacher | Yes |
+| DELETE | `/deleteTeacher/:ID` | Delete a teacher | Yes |
 
 ### Subjects — `/api`
 
-| Método | Ruta | Descripción | Requiere token |
+| Method | Route | Description | Requires token |
 |---|---|---|---|
-| GET | `/getAllSubjects` | Obtener todas las materias | Sí |
-| GET | `/getSubject/:ID` | Obtener una materia por ID | Sí |
-| POST | `/createSubject` | Crear una materia | Sí |
-| PUT | `/updateSubject/:ID` | Actualizar una materia | Sí |
-| DELETE | `/deleteSubject/:ID` | Eliminar una materia | Sí |
+| GET | `/getAllSubjects` | Get all subjects | Yes |
+| GET | `/getSubject/:ID` | Get a subject by ID | Yes |
+| POST | `/createSubject` | Create a subject | Yes |
+| PUT | `/updateSubject/:ID` | Update a subject | Yes |
+| DELETE | `/deleteSubject/:ID` | Delete a subject | Yes |
 
 ---
 
-## Ejemplos de uso
+## Usage Examples
 
-### Registrar un estudiante
+### Register a student
 
 ```http
 POST /api/auth/signup
@@ -180,7 +182,7 @@ Content-Type: application/json
 }
 ```
 
-### Iniciar sesión
+### Log in
 
 ```http
 POST /api/auth/login
@@ -192,7 +194,8 @@ Content-Type: application/json
 }
 ```
 
-Respuesta:
+Response:
+If it is a admin
 
 ```json
 {
@@ -200,7 +203,7 @@ Respuesta:
 }
 ```
 
-### Crear una materia
+### Create a subject
 
 ```http
 POST /api/createSubject
@@ -209,14 +212,14 @@ Content-Type: application/json
 
 {
   "ID": "MAT101",
-  "Name": "Matemáticas",
+  "Name": "English",
   "Teacher": "th001"
 }
 ```
 
-> El campo `Teacher` recibe el ID personalizado del maestro, no el `_id` de MongoDB.
+> The Teacher field receives the teacher's custom ID, not the MongoDB _id.
 
-### Crear un estudiante con materias
+### Create a student with subjects
 
 ```http
 POST /api/createStudent
@@ -227,18 +230,18 @@ Content-Type: application/json
   "ID": "12345",
   "Name": "Juan Pérez",
   "Email": "st12345@edu.com",
-  "Subjects": ["Matemáticas", "Historia"]
+  "Subjects": ["Mathematics", "History"]
 }
 ```
 
-> El campo `Subjects` recibe nombres de materias existentes. El sistema los resuelve automáticamente a sus IDs internos y retorna los nombres de los maestros asignados.
+> The Subjects field receives names of existing subjects. The system automatically resolves them to their internal IDs and returns the names of the assigned teachers.
 
 ---
 
-## Variables de entorno
+## Environment Variables
 
-| Variable | Descripción |
+| Variable | Description |
 |---|---|
-| `PORT` | Puerto en el que corre el servidor (default: 3000) |
-| `MONGO_URI` | URI de conexión a MongoDB Atlas |
-| `JWT_SECRET` | Clave secreta para firmar los tokens JWT |
+| `PORT` | Port where the server runs (default: 3000) |
+| `MONGO_URI` | MongoDB Atlas connection URI |
+| `JWT_SECRET` | Secret key to sign JWT tokens |
